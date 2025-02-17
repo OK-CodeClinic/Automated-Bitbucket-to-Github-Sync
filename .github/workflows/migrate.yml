@@ -12,13 +12,21 @@ jobs:
 
     steps:
       - name: Checkout Bitbucket Repo
+        env:
+          BITBUCKET_USERNAME: ${{ secrets.BITBUCKET_USERNAME }}
+          BITBUCKET_TOKEN: ${{ secrets.BITBUCKET_TOKEN }}
+          BITBUCKET_REPO: ${{ secrets.BITBUCKET_REPO }}
         run: |
-          git clone https://$BITBUCKET_USERNAME:$BITBUCKET_TOKEN@bitbucket.org/<bitbucket-username>/<bitbucket-repo>.git
-          cd <bitbucket-repo>
+          git clone https://$BITBUCKET_USERNAME:$BITBUCKET_TOKEN@bitbucket.org/$BITBUCKET_USERNAME/$BITBUCKET_REPO.git
+          cd $BITBUCKET_REPO
 
       - name: Push to GitHub
+        env:
+          MY_GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
+          GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME }}
+          GITHUB_REPO: ${{ secrets.GITHUB_REPO }}
         run: |
-          git remote add github https://$GITHUB_ACTOR:$MY_GITHUB_TOKEN@github.com/<github-username>/<github-repo>.git
+          git remote add github https://$GITHUB_USERNAME:$MY_GITHUB_TOKEN@github.com/$GITHUB_USERNAME/$GITHUB_REPO.git
           git push github --all
           git push github --tags
 

@@ -18,8 +18,12 @@ jobs:
           BITBUCKET_TOKEN: ${{ secrets.BITBUCKET_TOKEN }}
           BITBUCKET_REPO: ${{ secrets.REPO_NAME }}
         run: |
+          echo "Cloning Bitbucket repository..."
           git clone https://$BITBUCKET_USERNAME:$BITBUCKET_TOKEN@bitbucket.org/$BITBUCKET_USERNAME/$BITBUCKET_REPO.git
+          echo "Changing to repository directory..."
           cd $BITBUCKET_REPO
+          echo "Current directory: $(pwd)"
+          ls -la  # List files to verify the directory contents
 
       # Step 2: Push to GitHub
       - name: Push to GitHub
@@ -28,6 +32,9 @@ jobs:
           GITHUB_USERNAME: ${{ secrets.MY_GITHUB_USERNAME }}
           GITHUB_REPO: ${{ secrets.MY_GITHUB_REPO }}
         run: |
+          echo "Adding GitHub remote..."
           git remote add github https://$GITHUB_USERNAME:$MY_GITHUB_TOKEN@github.com/$GITHUB_USERNAME/$GITHUB_REPO.git
+          echo "Pushing to GitHub..."
           git push github --all
           git push github --tags
+          echo "Code synced successfully."

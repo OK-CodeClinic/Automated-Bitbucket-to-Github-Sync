@@ -1,7 +1,7 @@
 name: Bitbucket to GitHub Migration
 
 on:
-  workflow_dispatch:  
+  workflow_dispatch:  # Allows manual triggering of the workflow
 
 jobs:
   migrate:
@@ -18,12 +18,18 @@ jobs:
           BITBUCKET_USERNAME: ${{ secrets.BITBUCKET_USERNAME }}
           BITBUCKET_APP_PASSWORD: ${{ secrets.BITBUCKET_TOKEN }}
         run: |
-          git clone https://$BITBUCKET_USERNAME:$BITBUCKET_APP_PASSWORD@bitbucket.org/<BITBUCKET_USERNAME>/<REPO_NAME>.git bitbucket-repo
+          # Escape special characters in the username and password
+          BITBUCKET_USERNAME_ESCAPED=$(echo "$BITBUCKET_USERNAME" | sed 's/@/%40/g; s/:/%3A/g')
+          BITBUCKET_APP_PASSWORD_ESCAPED=$(echo "$BITBUCKET_APP_PASSWORD" | sed 's/@/%40/g; s/:/%3A/g')
+          
+          # Clone the Bitbucket repository
+          git clone "https://$BITBUCKET_USERNAME_ESCAPED:$BITBUCKET_APP_PASSWORD_ESCAPED@bitbucket.org/<BITBUCKET_USERNAME>/<REPO_NAME>.git" bitbucket-repo
 
       # Step 3: Copy files from Bitbucket repo to GitHub repo
       - name: Copy files to GitHub repository
         run: |
-          cp -r bitbucket-repo/* .
+          # Copy all files (including hidden files) except the .git directory
+          rsync -av --exclude='.git' bitbucket-repo/ .
           rm -rf bitbucket-repo
 
       # Step 4: Commit and push changes to GitHub

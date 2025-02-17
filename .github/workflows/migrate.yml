@@ -1,44 +1,24 @@
-name: Bitbucket to GitHub Migration
+name: Bitbucket to Github code Sync
 
 on:
-  workflow_dispatch:  # Allows manual triggering of the workflow
+  push:
+    branches:
+      - main  
+  workflow_dispatch:  
 
 jobs:
   migrate:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the GitHub repository
-      - name: Checkout GitHub repository
-        uses: actions/checkout@v3
-
-      # Step 2: Clone the Bitbucket repository
-      - name: Clone Bitbucket repository
-        env:
-          BITBUCKET_USERNAME: ${{ secrets.BITBUCKET_USERNAME }}
-          BITBUCKET_APP_PASSWORD: ${{ secrets.BITBUCKET_TOKEN }}
+      - name: Checkout Bitbucket Repo
         run: |
-          # Escape special characters in the username and password
-          BITBUCKET_USERNAME_ESCAPED=$(echo "$BITBUCKET_USERNAME" | sed 's/@/%40/g; s/:/%3A/g')
-          BITBUCKET_APP_PASSWORD_ESCAPED=$(echo "$BITBUCKET_APP_PASSWORD" | sed 's/@/%40/g; s/:/%3A/g')
-          
-          # Clone the Bitbucket repository
-          git clone "https://$BITBUCKET_USERNAME_ESCAPED:$BITBUCKET_APP_PASSWORD_ESCAPED@bitbucket.org/<BITBUCKET_USERNAME>/<REPO_NAME>.git" bitbucket-repo
+          git clone https://$BITBUCKET_USERNAME:$BITBUCKET_TOKEN@bitbucket.org/<bitbucket-username>/<bitbucket-repo>.git
+          cd <bitbucket-repo>
 
-      # Step 3: Copy files from Bitbucket repo to GitHub repo
-      - name: Copy files to GitHub repository
+      - name: Push to GitHub
         run: |
-          # Copy all files (including hidden files) except the .git directory
-          rsync -av --exclude='.git' bitbucket-repo/ .
-          rm -rf bitbucket-repo
+          git remote add github https://$GITHUB_ACTOR:$MY_GITHUB_TOKEN@github.com/<github-username>/<github-repo>.git
+          git push github --all
+          git push github --tags
 
-      # Step 4: Commit and push changes to GitHub
-      - name: Commit and push changes
-        env:
-          GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
-          git commit -m "Automated migration from Bitbucket"
-          git push origin main

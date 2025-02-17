@@ -1,0 +1,17 @@
+name: Bitbucket to Github Code Sync
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  schedule:
+    - cron: '*/1 * * * *' # Every minute
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test Step
+        run: echo "Hello, this is a cron test!"
+

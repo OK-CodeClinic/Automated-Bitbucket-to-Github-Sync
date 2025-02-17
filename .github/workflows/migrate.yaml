@@ -13,7 +13,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Clone the Bitbucket repository
       - name: Checkout Bitbucket Repo
         env:
           BITBUCKET_USERNAME: ${{ secrets.BITBUCKET_USERNAME }}
@@ -22,11 +21,9 @@ jobs:
         run: |
           echo "Cloning Bitbucket repository..."
           git clone https://$BITBUCKET_USERNAME:$BITBUCKET_TOKEN@bitbucket.org/$BITBUCKET_USERNAME/$BITBUCKET_REPO.git
-          echo "Changing to repository directory..."
-          ls -la  # List files to verify the directory contents
+          ls -la $BITBUCKET_REPO
 
-      # Step 2: Force Push to GitHub
-      - name: Force Push to GitHub
+      - name: Push to GitHub
         env:
           MY_GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
           GITHUB_USERNAME: ${{ secrets.MY_GITHUB_USERNAME }}
@@ -34,10 +31,7 @@ jobs:
           BITBUCKET_REPO: ${{ secrets.REPO_NAME }}
         run: |
           cd $BITBUCKET_REPO
-          echo "Adding GitHub remote..."
           git remote add github https://$GITHUB_USERNAME:$MY_GITHUB_TOKEN@github.com/$GITHUB_USERNAME/$GITHUB_REPO.git || true
-          echo "Force pushing to GitHub..."
           git push github --all --force
           git push github --tags --force
-          echo "Code synced successfully (forced)."
 

@@ -1,4 +1,4 @@
-name: Bitbucket to Github code Sync
+uname: Bitbucket to Github code Sync
 
 on:
   push:
@@ -15,7 +15,7 @@ jobs:
         env:
           BITBUCKET_USERNAME: ${{ secrets.BITBUCKET_USERNAME }}
           BITBUCKET_TOKEN: ${{ secrets.BITBUCKET_TOKEN }}
-          BITBUCKET_REPO: ${{ secrets.BITBUCKET_REPO }}
+          BITBUCKET_REPO: ${{ secrets.REPO_NAME }}
         run: |
           git clone https://$BITBUCKET_USERNAME:$BITBUCKET_TOKEN@bitbucket.org/$BITBUCKET_USERNAME/$BITBUCKET_REPO.git
           cd $BITBUCKET_REPO
@@ -23,8 +23,8 @@ jobs:
       - name: Push to GitHub
         env:
           MY_GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
-          GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME }}
-          GITHUB_REPO: ${{ secrets.GITHUB_REPO }}
+          GITHUB_USERNAME: ${{ secrets.MY_GITHUB_USERNAME }}
+          GITHUB_REPO: ${{ secrets.MY_GITHUB_REPO }}
         run: |
           git remote add github https://$GITHUB_USERNAME:$MY_GITHUB_TOKEN@github.com/$GITHUB_USERNAME/$GITHUB_REPO.git
           git push github --all

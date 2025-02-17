@@ -3,8 +3,8 @@ name: Bitbucket to Github Code Sync
 on:
   push:
     branches:
-      - main  
-  workflow_dispatch:  
+      - main
+  workflow_dispatch:
 
 jobs:
   migrate:
@@ -23,8 +23,8 @@ jobs:
           echo "Changing to repository directory..."
           ls -la  # List files to verify the directory contents
 
-      # Step 2: Push to GitHub
-      - name: Push to GitHub
+      # Step 2: Force Push to GitHub
+      - name: Force Push to GitHub
         env:
           MY_GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
           GITHUB_USERNAME: ${{ secrets.MY_GITHUB_USERNAME }}
@@ -33,9 +33,9 @@ jobs:
         run: |
           cd $BITBUCKET_REPO
           echo "Adding GitHub remote..."
-          git remote add github https://$GITHUB_USERNAME:$MY_GITHUB_TOKEN@github.com/$GITHUB_USERNAME/$GITHUB_REPO.git
-          echo "Pushing to GitHub..."
-          git push github --all
-          git push github --tags
-          echo "Code synced successfully."
+          git remote add github https://$GITHUB_USERNAME:$MY_GITHUB_TOKEN@github.com/$GITHUB_USERNAME/$GITHUB_REPO.git || true
+          echo "Force pushing to GitHub..."
+          git push github --all --force
+          git push github --tags --force
+          echo "Code synced successfully (forced)."
 

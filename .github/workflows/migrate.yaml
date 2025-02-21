@@ -20,7 +20,7 @@ jobs:
           BITBUCKET_REPO: ${{ secrets.REPO_NAME }}
         run: |
           echo "Cloning Bitbucket repository..."
-          git clone https://$BITBUCKET_USERNAME:$BITBUCKET_TOKEN@bitbucket.org/$BITBUCKET_USERNAME/$BITBUCKET_REPO.git
+          git clone https://bitbucket.org/$BITBUCKET_USERNAME/$BITBUCKET_REPO.git
           ls -la $BITBUCKET_REPO
           
       - name: Backup to S3

@@ -1,4 +1,4 @@
-name: Bitbucket to Github Code Sync
+name: Bitbucket Migrate to Github and backup to aws s3 
 
 on:
   push:
@@ -13,13 +13,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.BITBUCKET_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan bitbucket.org >> ~/.ssh/known_hosts
+
       - name: Checkout Bitbucket Repo
         env:
           BITBUCKET_USERNAME: ${{ secrets.BITBUCKET_USERNAME }}
           BITBUCKET_REPO: ${{ secrets.REPO_NAME }}
         run: |
           echo "Cloning Bitbucket repository..."
-          git clone https://bitbucket.org/$BITBUCKET_USERNAME/$BITBUCKET_REPO.git
+          git clone git@bitbucket.org:$BITBUCKET_USERNAME/$BITBUCKET_REPO.git
           ls -la $BITBUCKET_REPO
           
       - name: Backup to S3

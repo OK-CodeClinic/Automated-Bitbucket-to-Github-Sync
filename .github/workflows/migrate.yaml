@@ -16,7 +16,6 @@ jobs:
       - name: Checkout Bitbucket Repo
         env:
           BITBUCKET_USERNAME: ${{ secrets.BITBUCKET_USERNAME }}
-          BITBUCKET_TOKEN: ${{ secrets.BITBUCKET_TOKEN }}
           BITBUCKET_REPO: ${{ secrets.REPO_NAME }}
         run: |
           echo "Cloning Bitbucket repository..."
